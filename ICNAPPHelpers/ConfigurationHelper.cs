@@ -41,5 +41,14 @@ namespace ICNAPPHelpers
         {
             get { return ConfigurationManager.AppSettings["Face"].ToString(); }
         }
+
+        public static string ProcessDataFilePath
+        {
+            get { return ConfigurationManager.AppSettings["ProcessDataFilePath"].ToString(); }
+        }
+        public static string ProcessInterestFilePath
+        {
+            get { return ConfigurationManager.AppSettings["ProcessInterestFilePath"].ToString(); }
+        }
     }
 }

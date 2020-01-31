@@ -6,9 +6,12 @@ using ICNAPP.Models.CustomModels;
 using ICNAPP.Models.DatabaseModel;
 using ICNAPP.PITEntries.Interface;
 using ICNAPP.PITEntries.Operations;
+using ICNAPPHelpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace ICNAPP.API.ICNImplementation
@@ -70,6 +73,7 @@ namespace ICNAPP.API.ICNImplementation
                 else // PIT does not exist - data unsolicited
                 {
                     // drop
+                    return string.Empty;
                 }
                 return string.Empty;
             }
@@ -82,12 +86,73 @@ namespace ICNAPP.API.ICNImplementation
 
         private void ForwardData(string interestName, string data, PITEntry pITEntry)
         {
-            throw new NotImplementedException();
+            string fileName = ConfigurationHelper.ProcessDataFilePath+DateTime.Now.Ticks;
+
+            try
+            {
+                // Check if file already exists. If yes, delete it.     
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                // Create a new file     
+                using (FileStream fs = File.Create(fileName))
+                {
+                    // Add some text to file    
+                    Byte[] title = new UTF8Encoding(true).GetBytes("Process Data");
+                    fs.Write(title, 0, title.Length);
+                    byte[] interestNameInfo = new UTF8Encoding(true).GetBytes(interestName);
+                    fs.Write(interestNameInfo, 0, interestNameInfo.Length);
+                    Byte[] dataInfo = new UTF8Encoding(true).GetBytes(data);
+                    fs.Write(dataInfo, 0, dataInfo.Length);
+                    byte[] incomingFaceInfo = new UTF8Encoding(true).GetBytes(pITEntry.IncommingFace.ToString());
+                    fs.Write(incomingFaceInfo, 0, incomingFaceInfo.Length);
+                    Byte[] OutGoingFace = new UTF8Encoding(true).GetBytes(pITEntry.OutGoingFace);
+                    fs.Write(OutGoingFace, 0, OutGoingFace.Length);
+
+                }
+
+               
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine(Ex.ToString());
+            }
+
         }
 
         private void ForwardInterest(FIBEntry fIBEntry, string interestName)
         {
-            throw new NotImplementedException();
+            string fileName = ConfigurationHelper.ProcessInterestFilePath + DateTime.Now.Ticks;
+
+            try
+            {
+                // Check if file already exists. If yes, delete it.     
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                // Create a new file     
+                using (FileStream fs = File.Create(fileName))
+                {
+                    // Add some text to file    
+                    Byte[] title = new UTF8Encoding(true).GetBytes("Process Interest");
+                    fs.Write(title, 0, title.Length);
+                    byte[] interestNameInfo = new UTF8Encoding(true).GetBytes(interestName);
+                    fs.Write(interestNameInfo, 0, interestNameInfo.Length);
+                    Byte[] fibInfo = new UTF8Encoding(true).GetBytes(fIBEntry.FaceInformation);
+                    fs.Write(fibInfo, 0, fibInfo.Length);
+
+                }
+
+
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine(Ex.ToString());
+            }
         }
     }
 }
